@@ -1,34 +1,45 @@
-# Catalog is the set of all Ruby Tapas Episodes.
-class RubyTapasDownloader::Downloadables::Catalog <
-                                              RubyTapasDownloader::Downloadable
+module RubyTapasDownloader
+  # Catalog is the set of all Ruby Tapas Episodes.
+  class Downloadables::Catalog < Downloadable
 
-  # @return [Set<RubyTapasDownloader::Downloadables::Episode>] the Episodes.
-  attr_reader :episodes
+    # @return [Set<RubyTapasDownloader::Downloadables::Episode>] the Episodes.
+    attr_reader :episodes
 
-  def initialize episodes
-    @episodes = episodes
-  end
+    def initialize episodes
+      @episodes = episodes
+    end
 
-  # Download the Catalog.
-  #
-  # @param basepath [String] the path to place download.
-  # @param agent [Mechanize] the Mechanize agent.
-  def download basepath, agent
-    RubyTapasDownloader.logger.info 'Starting download of catalog in ' \
-                                    "`#{ basepath }'..."
-    FileUtils.mkdir_p basepath
-    episodes.each { |episode| episode.download basepath, agent }
-  end
+    # Download the Catalog.
+    #
+    # @param basepath [String] the path to place download.
+    # @param agent [Mechanize] the Mechanize agent.
+    def download basepath, agent
+      RubyTapasDownloader.logger.info 'Starting download of catalog in ' \
+                                      "`#{ basepath }'..."
 
-  def == other
-    episodes == other.episodes
-  end
+      unless nice_download_path? basepath
+        fail Exceptions::BadDownloadPath.new(basepath)
+      end
 
-  def eql? other
-    episodes.eql? other.episodes
-  end
+      episodes.each { |episode| episode.download basepath, agent }
+    end
 
-  def hash
-    episodes.hash
+    def == other
+      episodes == other.episodes
+    end
+
+    def eql? other
+      episodes.eql? other.episodes
+    end
+
+    def hash
+      episodes.hash
+    end
+
+    private
+
+    def nice_download_path? basepath
+      File.exists?(basepath) && File.directory?(basepath)
+    end
   end
 end

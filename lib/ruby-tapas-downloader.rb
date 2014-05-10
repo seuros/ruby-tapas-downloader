@@ -22,6 +22,7 @@ end
 require 'bundler/setup'
 require 'mechanize'
 
+require_relative 'ruby_tapas_downloader/exceptions'
 require_relative 'ruby_tapas_downloader/downloadables'
 
 require_relative 'ruby_tapas_downloader/extractors'
